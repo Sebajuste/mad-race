@@ -1,0 +1,122 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=4
+
+_global_script_classes=[ {
+"base": "Node",
+"class": "DefaultControlHandler",
+"language": "GDScript",
+"path": "res://scripts/car/controls/DefaultControlHandler.gd"
+}, {
+"base": "ResourceFormatLoader",
+"class": "HTerrainDataLoader",
+"language": "GDScript",
+"path": "res://addons/zylann.hterrain/hterrain_resource_loader.gd"
+}, {
+"base": "ResourceFormatSaver",
+"class": "HTerrainDataSaver",
+"language": "GDScript",
+"path": "res://addons/zylann.hterrain/hterrain_resource_saver.gd"
+}, {
+"base": "Object",
+"class": "NetBitPacker",
+"language": "GDScript",
+"path": "res://scripts/network/net_bitpacker.gd"
+}, {
+"base": "NetBitPacker",
+"class": "NetBitPackerReader",
+"language": "GDScript",
+"path": "res://scripts/network/net_bitpacker_reader.gd"
+}, {
+"base": "NetBitPacker",
+"class": "NetBitPackerWriter",
+"language": "GDScript",
+"path": "res://scripts/network/net_bitpacker_writer.gd"
+}, {
+"base": "Object",
+"class": "NetByteBuffer",
+"language": "GDScript",
+"path": "res://scripts/network/net_bytebuffer.gd"
+}, {
+"base": "Object",
+"class": "NetStream",
+"language": "GDScript",
+"path": "res://scripts/network/net_stream.gd"
+}, {
+"base": "NetStream",
+"class": "NetStreamReader",
+"language": "GDScript",
+"path": "res://scripts/network/net_stream_reader.gd"
+}, {
+"base": "NetStream",
+"class": "NetStreamWriter",
+"language": "GDScript",
+"path": "res://scripts/network/net_stream_writer.gd"
+}, {
+"base": "Object",
+"class": "NetUtils",
+"language": "GDScript",
+"path": "res://scripts/network/net_utils.gd"
+}, {
+"base": "Object",
+"class": "Packet",
+"language": "GDScript",
+"path": "res://scripts/network/net_packet.gd"
+} ]
+_global_script_class_icons={
+"DefaultControlHandler": "",
+"HTerrainDataLoader": "",
+"HTerrainDataSaver": "",
+"NetBitPacker": "",
+"NetBitPackerReader": "",
+"NetBitPackerWriter": "",
+"NetByteBuffer": "",
+"NetStream": "",
+"NetStreamReader": "",
+"NetStreamWriter": "",
+"NetUtils": "",
+"Packet": ""
+}
+
+[application]
+
+config/name="MadRace"
+run/main_scene="res://scenes/entry_point/EntryPoint.tscn"
+config/icon="res://icon.png"
+
+[autoload]
+
+Loading="*res://scripts/singletons/loading.gd"
+Network="*res://scripts/singletons/network.gd"
+Controller="*res://scripts/singletons/controller.gd"
+Configuration="*res://scripts/singletons/configuration.gd"
+
+[editor_plugins]
+
+enabled=PoolStringArray( "zylann.hterrain" )
+
+[input]
+
+gear_up={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":16777237,"unicode":0,"echo":false,"script":null)
+ ]
+}
+gear_down={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":16777238,"unicode":0,"echo":false,"script":null)
+ ]
+}
+
+[rendering]
+
+quality/filters/anisotropic_filter_level=16
+quality/filters/use_nearest_mipmap_filter=true
+quality/filters/msaa=1
+environment/default_environment="res://default_env.tres"

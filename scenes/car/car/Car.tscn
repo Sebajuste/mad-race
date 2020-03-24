@@ -1,0 +1,84 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://scenes/car/car/tire.material" type="Material" id=1]
+[ext_resource path="res://scripts/car/Car.gd" type="Script" id=2]
+[ext_resource path="res://sounds/Electric_Motor.wav" type="AudioStream" id=3]
+[ext_resource path="res://scenes/car/car/WheelControler.gd" type="Script" id=4]
+
+[sub_resource type="BoxShape" id=1]
+extents = Vector3( 0.787949, 0.379995, 1.67727 )
+
+[sub_resource type="CubeMesh" id=2]
+
+[sub_resource type="CylinderMesh" id=3]
+
+[node name="Car" type="VehicleBody"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0507865, 0 )
+script = ExtResource( 2 )
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.678981, 0 )
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="CollisionShape"]
+transform = Transform( 0.784348, 0, 0, 0, 0.390469, 0, 0, 0, 1.66728, 0, 0, 0 )
+mesh = SubResource( 2 )
+material/0 = null
+
+[node name="WheelControler" type="Node" parent="."]
+script = ExtResource( 4 )
+
+[node name="LeftFront" type="VehicleWheel" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.778316, 0.470337, 1.17937 )
+use_as_steering = true
+wheel_friction_slip = 50.0
+suspension_stiffness = 15.0
+suspension_max_force = 2000.0
+
+[node name="MeshInstance" type="MeshInstance" parent="LeftFront"]
+transform = Transform( 0.00137358, -0.178458, 0, 0.506892, 0.00390153, 0, 0, 0, 0.498429, 0, 0, 0 )
+mesh = SubResource( 3 )
+material/0 = ExtResource( 1 )
+
+[node name="RightFront" type="VehicleWheel" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.786195, 0.470337, 1.17937 )
+use_as_steering = true
+wheel_friction_slip = 50.0
+suspension_stiffness = 15.0
+suspension_max_force = 2000.0
+
+[node name="MeshInstance" type="MeshInstance" parent="RightFront"]
+transform = Transform( 0.00137358, -0.178458, 0, 0.506892, 0.00390153, 0, 0, 0, 0.498429, 0, 0, 0 )
+mesh = SubResource( 3 )
+material/0 = ExtResource( 1 )
+
+[node name="RightRear" type="VehicleWheel" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.786195, 0.470337, -0.999295 )
+use_as_traction = true
+wheel_friction_slip = 50.0
+suspension_stiffness = 15.0
+suspension_max_force = 2000.0
+
+[node name="MeshInstance" type="MeshInstance" parent="RightRear"]
+transform = Transform( 0.00137358, -0.178458, 0, 0.506892, 0.00390153, 0, 0, 0, 0.498429, 0, 0, 0 )
+mesh = SubResource( 3 )
+material/0 = ExtResource( 1 )
+
+[node name="LeftRear" type="VehicleWheel" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.778773, 0.470337, -0.999295 )
+use_as_traction = true
+wheel_friction_slip = 50.0
+suspension_stiffness = 15.0
+suspension_max_force = 2000.0
+
+[node name="MeshInstance" type="MeshInstance" parent="LeftRear"]
+transform = Transform( 0.00137358, -0.178458, 0, 0.506892, 0.00390153, 0, 0, 0, 0.498429, 0, 0, 0 )
+mesh = SubResource( 3 )
+material/0 = ExtResource( 1 )
+
+[node name="MotorSound" type="AudioStreamPlayer3D" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.729347, 0 )
+stream = ExtResource( 3 )
+autoplay = true
+
+[node name="MotorTween" type="Tween" parent="."]

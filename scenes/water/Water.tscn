@@ -1,0 +1,94 @@
+[gd_scene load_steps=10 format=2]
+
+[sub_resource type="Shader" id=2]
+code = "shader_type spatial;
+
+render_mode specular_toon;
+
+uniform sampler2D noise;
+uniform sampler2D normalmap;
+uniform float height_scale = 0.2;
+
+varying vec2 vertex_position;
+
+float wave(vec2 position)
+{
+	position += texture(noise, position / 10.0).x * 2.0 - 1.0;
+	vec2 wv = 1.0 - abs(sin(position));
+	return pow(1.0 - pow(wv.x * wv.y, 0.65), 4.0);
+}
+
+float height(vec2 position, float time)
+{
+	float d = wave((position + time) * 0.4) * 0.3;
+	d += wave((position - time) * 0.3) * 0.3;
+	d += wave((position + time) * 0.5) * 0.2;
+	d += wave((position - time) * 0.6) * 0.2;
+	return d;
+}
+
+
+
+void vertex()
+{
+	vertex_position = VERTEX.xz / 2.0;
+	vec2 pos = VERTEX.xz;
+	float k = height(pos, TIME);
+	VERTEX.y += k * height_scale;
+}
+
+void fragment() {
+	float fresnel = sqrt(1.0 - dot(NORMAL, VIEW));
+	NORMALMAP = texture(normalmap, vertex_position).xyz;
+	RIM = 0.2;
+	METALLIC = 0.0;
+	ROUGHNESS = 0.01 * (1.0 - fresnel);
+	ALBEDO = vec3(0.01, 0.03, 0.05) + (0.1 * fresnel);
+}"
+
+[sub_resource type="OpenSimplexNoise" id=4]
+
+[sub_resource type="NoiseTexture" id=5]
+noise = SubResource( 4 )
+
+[sub_resource type="OpenSimplexNoise" id=6]
+
+[sub_resource type="NoiseTexture" id=7]
+as_normalmap = true
+noise = SubResource( 6 )
+
+[sub_resource type="ShaderMaterial" id=3]
+shader = SubResource( 2 )
+shader_param/height_scale = 0.2
+shader_param/noise = SubResource( 5 )
+shader_param/normalmap = SubResource( 7 )
+
+[sub_resource type="PlaneMesh" id=1]
+material = SubResource( 3 )
+subdivide_width = 32
+subdivide_depth = 32
+
+[sub_resource type="ProceduralSky" id=8]
+sun_latitude = 15.0
+
+[sub_resource type="Environment" id=9]
+background_mode = 2
+background_sky = SubResource( 8 )
+
+[node name="Water" type="Spatial"]
+
+[node name="WaterMesh" type="MeshInstance" parent="."]
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 0.612948, 0.428167, -0.664054, 0, 0.840444, 0.541899, 0.790123, -0.332156, 0.515149, 0, 2.13146, 0 )
+light_energy = 0.5
+shadow_enabled = true
+
+[node name="OmniLight" type="OmniLight" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.339007, 0.226369, 0.291325 )
+visible = false
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 9 )
