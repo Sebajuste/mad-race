@@ -56,8 +56,30 @@ text = "Multiplayer"
 align = 1
 valign = 1
 
-[node name="Content" type="Control" parent="Panel/MarginContainer/VBoxContainer"]
+[node name="Username" type="HBoxContainer" parent="Panel/MarginContainer/VBoxContainer"]
 margin_top = 70.0
+margin_right = 944.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 0, 30 )
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/VBoxContainer/Username"]
+margin_right = 100.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 100, 20 )
+size_flags_vertical = 5
+text = "Username"
+valign = 1
+
+[node name="LineEdit" type="LineEdit" parent="Panel/MarginContainer/VBoxContainer/Username"]
+margin_left = 104.0
+margin_right = 234.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 130, 20 )
+text = "Player"
+align = 1
+
+[node name="Content" type="Control" parent="Panel/MarginContainer/VBoxContainer"]
+margin_top = 120.0
 margin_right = 944.0
 margin_bottom = 450.0
 size_flags_vertical = 3

@@ -1,5 +1,7 @@
 extends Node
 
+export var sync_frequency := 0.1
+
 export var motor_controller_path : NodePath
 export var gear_controller_path : NodePath
 export var wheel_controller_path : NodePath
@@ -16,9 +18,20 @@ var last_controls : Dictionary
 
 var need_update := false
 
+var need_interpolate := false
+var interpolate_start_pos : Vector3
+var interpolate_end_pos : Vector3
+var interpolate_t := 0.0
 
 var current_time := 0.0
 var packet_time := 0.0
+
+
+var packet_id := 0
+var last_packet_id_received := 0
+
+var packet_delta := 0
+
 
 
 # Called when the node enters the scene tree for the first time.
@@ -34,6 +47,9 @@ func _ready():
 func _process(delta):
 	
 	current_time += delta
+	
+	if need_interpolate:
+		interpolate_t += delta
 	
 
 
@@ -68,8 +84,29 @@ func integrate_forces(state: PhysicsDirectBodyState):
 		if need_update:
 			state.linear_velocity = last_state.linear_velocity
 			state.angular_velocity = last_state.angular_velocity
-			state.transform = last_state.transform
+			state.transform.basis = last_state.transform.basis
+			
+			var delta_pos = state.transform.origin - last_state.transform.origin
+			if delta_pos.length() > 1.0:
+				need_interpolate = true
+				interpolate_start_pos = state.transform.origin
+				interpolate_end_pos = last_state.transform.origin
+				interpolate_t = 0.0
+				pass
+			elif delta_pos.length() > 0.1:
+				state.transform.origin = last_state.transform.origin
+				need_interpolate = false
+			
 			need_update = false
+		
+		
+		if need_interpolate:
+			var t = interpolate_t / ( packet_delta * sync_frequency )
+			state.transform.origin = interpolate_start_pos.linear_interpolate(interpolate_end_pos, t)
+			var delta_pos = state.transform.origin - interpolate_end_pos
+			if delta_pos.length() < 0.01:
+				need_interpolate = false
+		
 		
 		pass
 	
@@ -99,7 +136,9 @@ master func sync_vehicule():
 		
 		var write_stream := NetStreamWriter.new(byte_buffer)
 		
-		write_stream.serialize_bits(100, 8) # frequency
+		packet_id = packet_id + 1
+		write_stream.serialize_bits(packet_id, 32) # frequency
+		write_stream.serialize_bits(sync_frequency * 1000, 8) # frequency
 		
 		
 		var properties := {
@@ -116,6 +155,8 @@ master func sync_vehicule():
 		
 		serialize(write_stream, properties)
 		
+		
+		
 		write_stream.flush()
 		byte_buffer.flip()
 		
@@ -131,16 +172,22 @@ master func sync_vehicule():
 
 puppet func sync_vehicule_reception(byte_packet : PoolByteArray ):
 	
-	var last_packet_time = packet_time
+	var last_packet_time := packet_time
 	packet_time = current_time
 	
 	var read_buffer := NetUtils.byte_buffer_from_byte_array(byte_packet)
 	var read_stream := NetStreamReader.new(read_buffer)
 	
-	var packet_frequency = read_stream.serialize_bits(0, 8) # frequency
+	read_stream.serialize_bits(packet_id, 32) # frequency
+	var packet_frequency : float = read_stream.serialize_bits(0, 8) / 1000.0 # frequency
 	
-	var jitter_time = packet_time - (last_packet_time + (packet_frequency / 1000.0) )
+	packet_delta = packet_id - last_packet_id_received
+	if packet_delta == 0:
+		packet_delta = 1
 	
+	var except_packet_time = last_packet_time + packet_delta * packet_frequency
+	
+	var jitter_time = current_time - except_packet_time
 	
 	
 	var properties := {
@@ -150,6 +197,8 @@ puppet func sync_vehicule_reception(byte_packet : PoolByteArray ):
 	}
 	
 	serialize(read_stream, properties)
+	
+	last_packet_id_received = packet_id
 	
 	# Jitter correction
 	if jitter_time > 0:
@@ -161,7 +210,6 @@ puppet func sync_vehicule_reception(byte_packet : PoolByteArray ):
 	last_state["transform"] = properties.transform
 	
 	
-	#print("received controls: ", controls)
 	last_controls = properties
 	
 	if motor_controller != null:
