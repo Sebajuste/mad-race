@@ -14,6 +14,8 @@ func _ready():
 	get_tree().connect("network_peer_connected", self, "_player_connected")
 	get_tree().connect("network_peer_disconnected", self, "_player_disconnected")
 	
+	Configuration.connect("configuration_changed", self, "_on_configuration_changed")
+	
 	player_car = Caterham.instance()
 	player_car.control_handler = "Player"
 	
@@ -63,6 +65,13 @@ func load_players():
 	
 	for id in Network.player_info:
 		_player_connected(id)
+	
+	pass
+
+
+func _on_configuration_changed(configuration: Dictionary):
+	
+	$UI/ControlsHelper.visible = configuration.Game.ControlsHelper
 	
 	pass
 
