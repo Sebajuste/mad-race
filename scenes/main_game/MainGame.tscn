@@ -21,6 +21,25 @@ script = ExtResource( 4 )
 
 [node name="VehicleInfo" parent="UI" instance=ExtResource( 3 )]
 
+[node name="ControlsHelper" type="MarginContainer" parent="UI"]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -250.0
+margin_top = -209.0
+margin_right = -20.0
+margin_bottom = -20.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ControlsHelper" parent="UI/ControlsHelper" instance=ExtResource( 7 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 230.0
+margin_bottom = 189.0
+
 [node name="OptionsMenu" type="MarginContainer" parent="UI"]
 pause_mode = 2
 visible = false
@@ -43,25 +62,6 @@ margin_right = 799.0
 margin_bottom = 474.0
 enable_close = true
 enable_return_main_menu = true
-
-[node name="MarginContainer" type="MarginContainer" parent="UI"]
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = -250.0
-margin_top = -209.0
-margin_right = -20.0
-margin_bottom = -20.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="ControlsHelper" parent="UI/MarginContainer" instance=ExtResource( 7 )]
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_right = 230.0
-margin_bottom = 189.0
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 pause_mode = 2

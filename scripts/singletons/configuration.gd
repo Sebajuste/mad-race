@@ -1,5 +1,7 @@
 extends Node
 
+signal configuration_changed(config)
+
 const Res_directory = "res://"
 const Settings_Path = Res_directory + "Settings.cfg"
 
@@ -25,7 +27,8 @@ var Settings = {
 	},
 	"Game":
 	{
-		"Language": ""
+		"Language": "",
+		"ControlsHelper": true
 	}
 }
 
@@ -33,11 +36,6 @@ var _config = ConfigFile.new()
 
 
 func _ready():
-	
-	print("get_bus_count: ", AudioServer.get_bus_count() )
-	print("Master: ", AudioServer.get_bus_index("Master") )
-	print("Music: ", AudioServer.get_bus_index("Music") )
-	print("SoundEffects: ", AudioServer.get_bus_index("SoundEffects") )
 	
 	Settings.Game.Language = TranslationServer.get_locale()
 	
@@ -73,6 +71,7 @@ func save_settings():
 		for key in Settings[section]:
 			_config.set_value(section, key, Settings[section][key])
 	_config.save(Settings_Path)
+	print("Save : ", Settings)
 
 
 func apply_settings():
@@ -98,6 +97,8 @@ func apply_settings():
 		AudioServer.set_bus_mute(AudioServer.get_bus_index("SoundEffects"), true)
 	
 	TranslationServer.set_locale( Settings.Game.Language )
+	
+	emit_signal("configuration_changed", Settings)
 
 
 func load_settings():
@@ -108,8 +109,8 @@ func load_settings():
 		return LOAD_ERROR_COULDNT_OPEN
 	for section in Settings.keys():
 		for key in Settings[section]:
-			var value = _config.get_value(section, key)
-			if value != null:
-				Settings[section][key] = value
+			Settings[section][key] = _config.get_value(section, key, Settings[section][key])
+			#if value != null:
+			#	Settings[section][key] = value
 	return LOAD_SUCCESS
 
