@@ -1,0 +1,10 @@
+[gd_scene format=2]
+
+[node name="PlayerItem" type="HBoxContainer"]
+margin_right = 1024.0
+margin_bottom = 14.0
+
+[node name="Username" type="Label" parent="."]
+margin_right = 39.0
+margin_bottom = 14.0
+text = "Player"

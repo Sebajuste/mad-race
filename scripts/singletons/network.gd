@@ -1,5 +1,7 @@
 extends Node
 
+signal properties_created(id, properties)
+signal properties_removed(id)
 signal property_changed(id, key, value)
 
 var enable := false
@@ -60,17 +62,13 @@ func broadcast(res: Node, method: String, args: Array):
 
 
 func _player_connected(id: int):
-	
-	print("_player_connected ", id)
-	
-	rpc_id(id, "_register_player")
+	var self_peer_id = get_self_peer_id()
+	rpc_id(id, "_register_player", player_info[self_peer_id])
 
 
 func _player_disconnected(id: int):
-	
-	print("_player_disconnected ", id)
-	
 	player_info.erase(id)
+	emit_signal("properties_removed", id)
 
 
 func _connected_ok():
@@ -88,22 +86,25 @@ func _connected_fail():
 
 func _server_disconnected():
 	enable = false
-	print("_server_disconnected")
-	
 	player_info.clear()
 
 
-remotesync func _register_player():
+remotesync func _register_player(properties):
 	var id = get_tree().get_rpc_sender_id()
-	player_info[id] = {}
-	
+	player_info[id] = properties
+	emit_signal("properties_created", id, properties)
 
 
 remotesync func _set_property(key: String, value):
 	var id = get_tree().get_rpc_sender_id()
-	var info = player_info[id]
+	var info
+	if not player_info.has(id):
+		info = {}
+		player_info[id] = info
+		emit_signal("properties_created", id, info)
+	else:
+		info = player_info[id]
 	info[key] = value
-	
 	emit_signal("property_changed", id, key, value)
 
 
